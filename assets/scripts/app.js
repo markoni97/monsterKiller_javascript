@@ -32,14 +32,19 @@ function writeToLog(ev, val, monsterHealth, playerHealth){
         finalMonsterHealth: monsterHealth,
         finalPayerHealth: playerHealth
     };
-    if(ev === LOG_EVENT_PLAYER_ATTACK){
-        logEntry.target = 'MONSTER';
-    } else if(ev === LOG_EVENT_PLAYER_STRONG_ATTACK){
-        logEntry.target = 'MONSTER';
-    } else if(ev === LOG_EVENT_PLAYER_HEAL){
-        logEntry.target = 'PLAYER';
-    } else if(ev === LOG_EVENT_MONSTER_ATTACK){
-        logEntry.target = 'PLAYER';
+
+    switch (ev){
+        case LOG_EVENT_PLAYER_ATTACK:
+        case LOG_EVENT_PLAYER_STRONG_ATTACK:
+            logEntry.target = 'MONSTER';
+            break;
+        case LOG_EVENT_PLAYER_HEAL:
+        case LOG_EVENT_MONSTER_ATTACK:
+            logEntry.target = 'PLAYER';
+            break;
+        default:
+            break;
+        
     } 
     battleLog.push(logEntry);
 }
@@ -101,15 +106,10 @@ function endRound(){
 }
 
 function attack(mode){
-    let maxDamage;
-    let logEvent;
-    if(mode === MODE_ATTACK){
-        maxDamage = ATTACK_VALUE;
-        logEvent = LOG_EVENT_PLAYER_ATTACK;
-    } else if (mode === MODE_STRONG_ATTACK){
-        maxDamage = STRONG_ATTACK;
-        logEvent = LOG_EVENT_PLAYER_STRONG_ATTACK;
-    }
+    const maxDamage = mode === MODE_ATTACK ? 
+    ATTACK_VALUE : STRONG_ATTACK;
+    const logEvent = mode === MODE_ATTACK ? 
+    LOG_EVENT_PLAYER_ATTACK : LOG_EVENT_PLAYER_STRONG_ATTACK;
 
     const damage = dealMonsterDamage(maxDamage);
     currentMonsterHealth -= damage;
@@ -151,7 +151,18 @@ function healPLayerHandler(){
 }
 
 function printLogHandler(){
-    console.log(battleLog);
+    //for (let i = 0; i < battleLog.length; i++){
+    //    console.log(battleLog[i]);
+    //}
+
+    let index = 0;
+    for (const logEntry of battleLog){
+        console.log(`#${index}`)
+        for(const key in logEntry)
+            console.log(`${key} => ${logEntry[key]}`);
+    }
+    index++;
+    
 }
 
 
